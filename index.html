@@ -64,17 +64,41 @@ section{padding:100px 48px;}
 #rsvp .s-title{color:var(--cream);}
 #rsvp .s-body{color:var(--gold-light);}
 #rsvp .gold-line{background:var(--gold);}
-.rsvp-wrap{max-width:600px;margin:0 auto;text-align:center;}
-.rsvp-form{margin-top:48px;text-align:left;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.rsvp-wrap{max-width:560px;margin:0 auto;text-align:center;}
 .fg{display:flex;flex-direction:column;gap:8px;}
 .fg label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
-.fg input,.fg select{background:rgba(255,255,255,0.05);border:1px solid rgba(201,169,110,0.3);color:var(--cream);padding:14px 16px;font-family:'Montserrat',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.3s;}
+.fg input,.fg select{background:rgba(255,255,255,0.05);border:1px solid rgba(201,169,110,0.3);color:var(--cream);padding:14px 16px;font-family:'Montserrat',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.3s;width:100%;}
 .fg input:focus,.fg select:focus{border-color:var(--gold);}
 .fg select option{background:var(--dark);}
-.rsvp-submit{width:100%;padding:18px;background:var(--gold);border:none;color:white;font-family:'Montserrat',sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:opacity 0.3s;}
+/* RSVP locked search */
+.rsvp-search-wrap{position:relative;margin-top:40px;text-align:left;}
+.rsvp-search-inp{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(201,169,110,0.3);color:var(--cream);padding:16px 20px;font-family:'Montserrat',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.3s;}
+.rsvp-search-inp:focus{border-color:var(--gold);}
+.rsvp-search-inp::placeholder{color:rgba(201,169,110,0.5);}
+.rsvp-autocomplete{position:absolute;top:100%;left:0;right:0;background:#1a1208;border:1px solid rgba(201,169,110,0.4);border-top:none;z-index:50;max-height:220px;overflow-y:auto;display:none;}
+.rsvp-autocomplete.open{display:block;}
+.rsvp-ac-item{padding:14px 20px;cursor:pointer;font-size:0.85rem;color:var(--cream);border-bottom:1px solid rgba(201,169,110,0.1);transition:background 0.15s;}
+.rsvp-ac-item:hover,.rsvp-ac-item.active{background:rgba(201,169,110,0.15);}
+.rsvp-ac-empty{padding:14px 20px;font-size:0.82rem;color:rgba(201,169,110,0.5);font-style:italic;}
+.rsvp-card{display:none;margin-top:32px;border:1px solid rgba(201,169,110,0.3);padding:32px;text-align:left;animation:fadeUp 0.4s ease both;}
+.rsvp-card-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--cream);margin-bottom:4px;}
+.rsvp-card-sub{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;}
+.rsvp-already{display:inline-block;padding:6px 16px;border-radius:50px;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;}
+.rsvp-already.conf{background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.3);}
+.rsvp-already.decl{background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
+.rsvp-already.pend{background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);}
+.rsvp-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.rsvp-btn{padding:16px;border:1px solid;font-family:'Montserrat',sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;background:none;}
+.rsvp-btn.yes{border-color:rgba(74,222,128,0.4);color:#4ade80;}
+.rsvp-btn.yes:hover,.rsvp-btn.yes.sel{background:rgba(74,222,128,0.15);border-color:#4ade80;}
+.rsvp-btn.no{border-color:rgba(248,113,113,0.4);color:#f87171;}
+.rsvp-btn.no:hover,.rsvp-btn.no.sel{background:rgba(248,113,113,0.15);border-color:#f87171;}
+.rsvp-diet-row{margin-bottom:16px;}
+.rsvp-submit{width:100%;padding:16px;background:var(--gold);border:none;color:white;font-family:'Montserrat',sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:opacity 0.3s;margin-top:4px;}
 .rsvp-submit:hover{opacity:0.85;}
-.rsvp-success{display:none;text-align:center;padding:40px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;}
+.rsvp-submit:disabled{opacity:0.4;cursor:not-allowed;}
+.rsvp-success{display:none;text-align:center;padding:48px 20px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;}
+.rsvp-not-found{display:none;margin-top:16px;padding:16px 20px;border:1px solid rgba(248,113,113,0.3);color:#f87171;font-size:0.8rem;text-align:center;}
 #location{background:var(--warm);}
 .loc-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
 .loc-detail{display:flex;gap:16px;margin-bottom:28px;align-items:flex-start;}
@@ -284,29 +308,50 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
     <span class="s-label">Conferma presenza</span>
     <h2 class="s-title">Sarai con noi?</h2>
     <div class="gold-line" style="margin:0 auto 24px;"></div>
-    <p class="s-body" style="margin:0 auto;text-align:center;">Ti chiediamo di confermare la tua presenza entro il <strong style="color:var(--gold)">1&deg; Maggio 2026</strong>.<br>Siamo impazienti di festeggiare insieme a te!</p>
-    <div class="rsvp-form" id="rsvp-form">
-      <div class="form-row">
-        <div class="fg"><label>Nome</label><input type="text" id="rsvp-name" placeholder="Il tuo nome"></div>
-        <div class="fg"><label>Cognome</label><input type="text" id="rsvp-surname" placeholder="Il tuo cognome"></div>
+    <p class="s-body" style="margin:0 auto;text-align:center;">
+      Cerca il tuo nome nella lista degli invitati e conferma la tua presenza entro il
+      <strong style="color:var(--gold)">1&deg; Maggio 2026</strong>.
+    </p>
+
+    <!-- Step 1: ricerca -->
+    <div class="rsvp-search-wrap" id="rsvp-step1">
+      <input class="rsvp-search-inp" type="text" id="rsvp-search"
+        placeholder="Inizia a scrivere il tuo nome o cognome..."
+        autocomplete="off"
+        oninput="rsvpSearch(this.value)"
+        onkeydown="rsvpKeyNav(event)">
+      <div class="rsvp-autocomplete" id="rsvp-ac"></div>
+      <div class="rsvp-not-found" id="rsvp-not-found">
+        Il tuo nome non &egrave; nella lista degli invitati.<br>
+        <span style="font-size:0.75rem;opacity:0.7">Contatta gli sposi per maggiori informazioni.</span>
       </div>
-      <div class="form-row">
-        <div class="fg"><label>Email</label><input type="email" id="rsvp-email" placeholder="email@esempio.com"></div>
-        <div class="fg"><label>Telefono</label><input type="tel" id="rsvp-phone" placeholder="+39 ..."></div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label>Presenza</label>
-          <select id="rsvp-status">
-            <option value="">Seleziona...</option>
-            <option value="confermato">Sar&ograve; presente</option>
-            <option value="declinato">Non potr&ograve; venire</option>
-          </select>
-        </div>
-        <div class="fg"><label>Intolleranze alimentari</label><input type="text" id="rsvp-diet" placeholder="Es: vegetariano, celiaco..."></div>
-      </div>
-      <button class="rsvp-submit" onclick="submitRSVP()">Invia conferma</button>
     </div>
-    <div class="rsvp-success" id="rsvp-success">Grazie! Ti aspettiamo il 2 Gennaio &#x1F90D;</div>
+
+    <!-- Step 2: scheda invitato -->
+    <div class="rsvp-card" id="rsvp-card">
+      <div class="rsvp-card-name" id="rsvp-card-name"></div>
+      <div class="rsvp-card-sub">Invitato confermato in lista</div>
+      <div id="rsvp-current-badge"></div>
+      <div class="rsvp-btns">
+        <button class="rsvp-btn yes" id="rsvp-btn-yes" onclick="selectRsvp('confermato')">&#10003; &nbsp;Sar&ograve; presente</button>
+        <button class="rsvp-btn no"  id="rsvp-btn-no"  onclick="selectRsvp('declinato')">&#10005; &nbsp;Non potr&ograve; venire</button>
+      </div>
+      <div class="rsvp-diet-row fg">
+        <label>Intolleranze alimentari (opzionale)</label>
+        <input type="text" id="rsvp-diet-inp" placeholder="Es: vegetariano, celiaco, senza glutine...">
+      </div>
+      <button class="rsvp-submit" id="rsvp-submit-btn" onclick="submitRSVP()" disabled>Conferma risposta</button>
+      <p style="margin-top:14px;font-size:0.7rem;color:rgba(201,169,110,0.5);text-align:center;">
+        <span id="rsvp-back-link" onclick="resetRsvp()" style="cursor:pointer;text-decoration:underline;">&#8592; Cerca un altro nome</span>
+      </p>
+    </div>
+
+    <!-- Step 3: grazie -->
+    <div class="rsvp-success" id="rsvp-success">
+      <div style="font-size:2.5rem;margin-bottom:16px">&#x1F90D;</div>
+      Grazie, <span id="rsvp-success-name"></span>!<br>
+      <span style="font-size:1rem;opacity:0.8">Ti aspettiamo il 2 Gennaio 2026.</span>
+    </div>
   </div>
 </section>
 
@@ -779,20 +824,121 @@ function deleteGuest(id){
 }
 function closeModal(){document.getElementById('guest-modal').classList.remove('open');}
 
-// ─── RSVP ───
-function submitRSVP(){
-  var name=gv('rsvp-name'),surname=gv('rsvp-surname'),status=document.getElementById('rsvp-status').value;
-  if(!name||!surname||!status){alert('Compila almeno nome, cognome e presenza.');return;}
-  var obj={name:name,surname:surname,email:gv('rsvp-email'),phone:gv('rsvp-phone'),diet:gv('rsvp-diet'),status:status,source:'rsvp',table:'',notes:'',date:new Date().toISOString()};
-  addGuestFS(obj, function(added){
-    if(added){
-      document.getElementById('rsvp-form').style.display='none';
-      document.getElementById('rsvp-success').style.display='block';
-    } else {
-      alert('Errore nell\'invio. Riprova tra poco.');
-    }
+// ─── RSVP LISTA CHIUSA ───
+var rsvpAllGuests = [];   // cache locale invitati per autocomplete
+var rsvpSelected = null;  // invitato selezionato
+var rsvpChoice = null;    // 'confermato' | 'declinato'
+var acHighlight = -1;
+
+// Carica lista invitati per autocomplete (solo nome+cognome, niente dati sensibili)
+function loadRsvpList() {
+  if (!FB_READY) return;
+  db.collection('guests').get().then(function(snap) {
+    rsvpAllGuests = [];
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      rsvpAllGuests.push({ id: doc.id, name: d.name || '', surname: d.surname || '', status: d.status || 'in attesa', diet: d.diet || '' });
+    });
+  }).catch(function() {});
+}
+
+function rsvpSearch(val) {
+  var ac = document.getElementById('rsvp-ac');
+  var nf = document.getElementById('rsvp-not-found');
+  nf.style.display = 'none';
+  acHighlight = -1;
+  if (val.trim().length < 2) { ac.classList.remove('open'); return; }
+  var q = val.toLowerCase();
+  var matches = rsvpAllGuests.filter(function(g) {
+    return (g.name + ' ' + g.surname).toLowerCase().indexOf(q) > -1;
+  }).slice(0, 8);
+  if (!matches.length) {
+    ac.innerHTML = '<div class="rsvp-ac-empty">Nessun invitato trovato con questo nome.</div>';
+    ac.classList.add('open');
+    return;
+  }
+  ac.innerHTML = matches.map(function(g, i) {
+    var statusDot = g.status === 'confermato' ? '🟢' : g.status === 'declinato' ? '🔴' : '🟡';
+    return '<div class="rsvp-ac-item" data-idx="' + i + '" onclick="selectGuest(' + JSON.stringify(g).replace(/"/g, '&quot;') + ')">' +
+      '<strong>' + g.name + ' ' + g.surname + '</strong>' +
+      '<span style="float:right;font-size:0.7rem;opacity:0.6">' + statusDot + ' ' + g.status + '</span>' +
+      '</div>';
+  }).join('');
+  ac.classList.add('open');
+}
+
+function rsvpKeyNav(e) {
+  var items = document.querySelectorAll('.rsvp-ac-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') { acHighlight = Math.min(acHighlight + 1, items.length - 1); }
+  else if (e.key === 'ArrowUp') { acHighlight = Math.max(acHighlight - 1, 0); }
+  else if (e.key === 'Enter' && acHighlight >= 0) { items[acHighlight].click(); return; }
+  else if (e.key === 'Escape') { document.getElementById('rsvp-ac').classList.remove('open'); return; }
+  items.forEach(function(el, i) { el.classList.toggle('active', i === acHighlight); });
+}
+
+function selectGuest(g) {
+  rsvpSelected = g;
+  rsvpChoice = null;
+  document.getElementById('rsvp-ac').classList.remove('open');
+  document.getElementById('rsvp-search').value = g.name + ' ' + g.surname;
+  document.getElementById('rsvp-card-name').textContent = g.name + ' ' + g.surname;
+  // badge stato attuale
+  var badgeMap = { confermato: 'conf', declinato: 'decl', 'in attesa': 'pend' };
+  var labelMap = { confermato: 'Hai già confermato', declinato: 'Hai già declinato', 'in attesa': 'Risposta in attesa' };
+  var bc = badgeMap[g.status] || 'pend';
+  document.getElementById('rsvp-current-badge').innerHTML =
+    '<span class="rsvp-already ' + bc + '">' + (labelMap[g.status] || g.status) + '</span>';
+  // pre-seleziona se già risposto
+  document.getElementById('rsvp-diet-inp').value = g.diet || '';
+  document.getElementById('rsvp-btn-yes').classList.remove('sel');
+  document.getElementById('rsvp-btn-no').classList.remove('sel');
+  if (g.status === 'confermato') { rsvpChoice = 'confermato'; document.getElementById('rsvp-btn-yes').classList.add('sel'); }
+  if (g.status === 'declinato')  { rsvpChoice = 'declinato';  document.getElementById('rsvp-btn-no').classList.add('sel'); }
+  document.getElementById('rsvp-submit-btn').disabled = !rsvpChoice;
+  document.getElementById('rsvp-card').style.display = 'block';
+  document.getElementById('rsvp-not-found').style.display = 'none';
+}
+
+function selectRsvp(val) {
+  rsvpChoice = val;
+  document.getElementById('rsvp-btn-yes').classList.toggle('sel', val === 'confermato');
+  document.getElementById('rsvp-btn-no').classList.toggle('sel', val === 'declinato');
+  document.getElementById('rsvp-submit-btn').disabled = false;
+}
+
+function submitRSVP() {
+  if (!rsvpSelected || !rsvpChoice) return;
+  var diet = document.getElementById('rsvp-diet-inp').value.trim();
+  var btn = document.getElementById('rsvp-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Salvataggio...';
+  updateGuestFS(rsvpSelected.id, { status: rsvpChoice, diet: diet, source: 'rsvp', rsvpDate: new Date().toISOString() }, function() {
+    document.getElementById('rsvp-step1').style.display = 'none';
+    document.getElementById('rsvp-card').style.display = 'none';
+    document.getElementById('rsvp-success-name').textContent = rsvpSelected.name;
+    document.getElementById('rsvp-success').style.display = 'block';
+    // aggiorna cache locale
+    var idx = rsvpAllGuests.findIndex(function(g) { return g.id === rsvpSelected.id; });
+    if (idx > -1) { rsvpAllGuests[idx].status = rsvpChoice; rsvpAllGuests[idx].diet = diet; }
   });
 }
+
+function resetRsvp() {
+  rsvpSelected = null; rsvpChoice = null;
+  document.getElementById('rsvp-search').value = '';
+  document.getElementById('rsvp-ac').classList.remove('open');
+  document.getElementById('rsvp-card').style.display = 'none';
+  document.getElementById('rsvp-not-found').style.display = 'none';
+}
+
+// Chiudi autocomplete cliccando fuori
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#rsvp-step1')) {
+    var ac = document.getElementById('rsvp-ac');
+    if (ac) ac.classList.remove('open');
+  }
+});
 
 // ─── DRAG & DROP IMPORT ───
 var dz=document.getElementById('drop-zone');
@@ -916,6 +1062,7 @@ function clearAll(){
 // ─── INIT ───
 (function(){
   initFirebase();
+  loadRsvpList();
   var s=loadS();
   document.getElementById('hero-bride').textContent=s.bride;
   document.getElementById('hero-groom').textContent=s.groom;
