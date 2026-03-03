@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michela & Marco — 14 Giugno 2025</title>
+<title>Michela & Guglielmo — 14 Giugno 2025</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Firebase SDK (compat v9) -->
@@ -210,7 +210,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
 
 <!-- NAV -->
 <nav>
-  <div class="nav-brand" id="nav-brand">Michela &amp; Marco</div>
+  <div class="nav-brand" id="nav-brand">Michela &amp; Guglielmo</div>
   <ul class="nav-links">
     <li><a href="#home">Home</a></li>
     <li><a href="#storia">La nostra storia</a></li>
@@ -228,7 +228,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
   <div class="hero-content">
     <span class="hero-date" id="hero-date-txt">14 Giugno 2025 &middot; Spoleto, Umbria</span>
     <h1 class="hero-names">
-      <span id="hero-bride">Michela</span><span class="hero-amp">&amp;</span><span id="hero-groom">Marco</span>
+      <span id="hero-bride">Michela</span><span class="hero-amp">&amp;</span><span id="hero-groom">Guglielmo</span>
     </h1>
     <p class="hero-sub">ci sposiamo</p>
     <div class="hero-divider"></div>
@@ -321,7 +321,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
       <div class="loc-detail"><div class="loc-icon">&#128205;</div><div class="loc-text"><h4>Indirizzo</h4><p>Via dei Colli 14, 06049 Spoleto (PG)</p></div></div>
       <div class="loc-detail"><div class="loc-icon">&#128663;</div><div class="loc-text"><h4>In auto</h4><p>Uscita A1 Spoleto Nord, seguire indicazioni Villa dei Colli. Parcheggio gratuito.</p></div></div>
       <div class="loc-detail"><div class="loc-icon">&#128642;</div><div class="loc-text"><h4>In treno</h4><p>Stazione di Spoleto (Trenitalia). Navetta disponibile dalle 14:30.</p></div></div>
-      <div class="loc-detail"><div class="loc-icon">&#127976;</div><div class="loc-text"><h4>Pernottamento</h4><p>Hotel Gattapone &#9733;&#9733;&#9733;&#9733; &mdash; sconto riservato agli invitati (codice: MichelaMARCO).</p></div></div>
+      <div class="loc-detail"><div class="loc-icon">&#127976;</div><div class="loc-text"><h4>Pernottamento</h4><p>Hotel Gattapone &#9733;&#9733;&#9733;&#9733; &mdash; sconto riservato agli invitati (codice: MichelaGuglielmo).</p></div></div>
     </div>
     <div>
       <div class="map-ph">
@@ -335,7 +335,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-names" id="footer-names">Michela &amp; Marco</div>
+  <div class="footer-names" id="footer-names">Michela &amp; Guglielmo</div>
   <p>14 Giugno 2025 &middot; Villa dei Colli, Spoleto</p>
   <p style="margin-top:12px;font-size:0.68rem;opacity:0.5;">Con amore &#9825;</p>
 </footer>
@@ -422,7 +422,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
         <div class="s-card">
           <h4>Informazioni sposi</h4>
           <div class="fg"><label>Nome sposa</label><input type="text" id="s-bride" value="Michela"></div>
-          <div class="fg"><label>Nome sposo</label><input type="text" id="s-groom" value="Marco"></div>
+          <div class="fg"><label>Nome sposo</label><input type="text" id="s-groom" value="Guglielmo"></div>
           <div class="fg"><label>Data matrimonio</label><input type="date" id="s-date" value="2025-06-14"></div>
           <div class="fg"><label>Location</label><input type="text" id="s-location" value="Villa dei Colli, Spoleto"></div>
           <button class="tbtn btn-gold" style="margin-top:8px" onclick="saveSettings()">Salva impostazioni</button>
@@ -521,7 +521,7 @@ function hideFbError() {
 // Settings e credenziali → localStorage (non sensibili in produzione)
 
 function loadS(){
-  var d={bride:'Michela',groom:'Marco',date:'2025-06-14',location:'Villa dei Colli, Spoleto'};
+  var d={bride:'Michela',groom:'Guglielmo',date:'2025-06-14',location:'Villa dei Colli, Spoleto'};
   try{return JSON.parse(localStorage.getItem('weddingSettings'))||d;}catch(e){return d;}
 }
 function loadC(){
