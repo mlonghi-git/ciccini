@@ -858,10 +858,10 @@ function rsvpSearch(val) {
     return;
   }
   ac.innerHTML = matches.map(function(g, i) {
-    var statusDot = g.status === 'confermato' ? '🟢' : g.status === 'declinato' ? '🔴' : '🟡';
+    //var statusDot = g.status === 'confermato' ? '🟢' : g.status === 'declinato' ? '🔴' : '🟡';
     return '<div class="rsvp-ac-item" data-idx="' + i + '" onclick="selectGuest(' + JSON.stringify(g).replace(/"/g, '&quot;') + ')">' +
       '<strong>' + g.name + ' ' + g.surname + '</strong>' +
-      '<span style="float:right;font-size:0.7rem;opacity:0.6">' + statusDot + ' ' + g.status + '</span>' +
+      '<span style="float:right;font-size:0.7rem;opacity:0.6">' /* + statusDot + ' ' + g.status */ + '</span>' +
       '</div>';
   }).join('');
   ac.classList.add('open');
