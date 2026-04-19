@@ -215,7 +215,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
 </style>
 </head>
 <body>
-<!-- Firebase config banner -->
+<!-- Database error banner -->
 <div id="fb-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#7f1d1d;color:#fca5a5;padding:12px 24px;font-size:0.8rem;text-align:center;"></div>
 
 <!-- LOGIN -->
@@ -485,7 +485,7 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
         </div>
         <div class="s-card">
           <h4>Note tecniche</h4>
-          <p style="font-size:0.78rem;color:#8892a4;line-height:1.8;">Gli invitati sono salvati su <strong style="color:#e2e8f0">Firebase Firestore</strong>, accessibile da qualsiasi dispositivo.<br><br>Le impostazioni del sito (nomi, data, location) e le credenziali di accesso sono salvate nel localStorage del browser.<br><br><em style="font-size:0.72rem;">Ricordati di impostare le regole Firestore in produzione.</em></p>
+          <p style="font-size:0.78rem;color:#8892a4;line-height:1.8;">Gli invitati sono salvati su <strong style="color:#e2e8f0">Supabase PostgreSQL</strong>, accessibile da qualsiasi dispositivo.<br><br>Le impostazioni del sito (nomi, data, location) e le credenziali di accesso sono salvate nel localStorage del browser.<br><br><em style="font-size:0.72rem;">I dati sono protetti da Row-Level Security (RLS) a livello database.</em></p>
         </div>
       </div>
     </div>
@@ -825,14 +825,14 @@ var acHighlight = -1;
 
 // Carica lista invitati per autocomplete (solo nome+cognome, niente dati sensibili)
 function loadRsvpList() {
-  if (!FB_READY) return;
-  db.collection('guests').get().then(function(snap) {
-    rsvpAllGuests = [];
-    snap.forEach(function(doc) {
-      var d = doc.data();
-      rsvpAllGuests.push({ id: doc.id, name: d.name || '', surname: d.surname || '', status: d.status || 'in attesa', diet: d.diet || '' });
-    });
-  }).catch(function() {});
+  if (!DB_READY) return;
+  supabase.from('guests').select('id,name,surname,status,diet')
+    .then(function(response) {
+      if (response.error) { return; }
+      rsvpAllGuests = response.data.map(function(d) {
+        return { id: d.id, name: d.name || '', surname: d.surname || '', status: d.status || 'in attesa', diet: d.diet || '' };
+      });
+    }).catch(function() {});
 }
 
 function rsvpSearch(val) {
@@ -1054,7 +1054,7 @@ function clearAll(){
 
 // ─── INIT ───
 (function(){
-  initFirebase();
+  initDB();
   loadRsvpList();
   var s=loadS();
   document.getElementById('hero-bride').textContent=s.bride;
