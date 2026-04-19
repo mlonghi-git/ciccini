@@ -6,9 +6,8 @@
 <title>Michela & Guglielmo — 2 Gennaio 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<!-- Firebase SDK (compat v9) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Supabase SDK v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm"></script>
 <style>
 :root {
   --cream:#faf7f2; --warm:#f5ede0; --gold:#c9a96e; --gold-light:#e8d5b0;
@@ -525,38 +524,26 @@ tbody td{padding:14px 16px;font-size:0.82rem;color:#cbd5e1;}
 <div class="toast" id="toast-el"></div>
 
 <script>
-// ─── FIREBASE CONFIG ───
-// ⚠️ SOSTITUISCI con la tua configurazione da console.firebase.google.com
-var firebaseConfig = {
-  apiKey: "AIzaSyDBMuyk5KD6x988YzjcFutnXQejQQYVa9A",
-  authDomain: "matrimoniociccini.firebaseapp.com",
-  projectId: "matrimoniociccini",
-  storageBucket: "matrimoniociccini.firebasestorage.app",
-  messagingSenderId: "1071049582343",
-  appId: "1:1071049582343:web:0cc7e590c36cae7deb87a2",
-  measurementId: "G-40PB3XRV82"
-};
+// ─── SUPABASE CONFIG ───
+var SUPABASE_URL = 'https://asqpmpjemiaiyqohoyfc.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzcXBtcGplbWlhaXlxb2hveWZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzMyODMsImV4cCI6MjA5MjIwOTI4M30.si_uA8xGMLPTsLeQYjSFSgZMXnz-mG1Tk7p1s8SUSNo';
 
+var supabase;
+var DB_READY = false;
 
-// ─── FIREBASE INIT ───
-var fbApp, db;
-var FB_READY = false;
-
-function initFirebase() {
+async function initDB() {
   try {
-    if (typeof firebase === 'undefined') { showFbError('Firebase SDK non caricato. Controlla la connessione.'); return; }
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    FB_READY = true;
-    hideFbError();
-  } catch(e) { showFbError('Errore Firebase: ' + e.message); }
+    const { createClient } = window.supabase;
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    DB_READY = true;
+    hideDBError();
+  } catch(e) { showDBError('Errore Supabase: ' + e.message); }
 }
-function showFbError(msg) {
+function showDBError(msg) {
   var b = document.getElementById('fb-banner');
   if(b){ b.textContent = '⚠ ' + msg; b.style.display = 'block'; }
 }
-function hideFbError() {
-  var b = document.getElementById('fb-banner');
+function hideDBError() {
   if(b) b.style.display = 'none';
 }
 
@@ -573,81 +560,84 @@ function loadC(){
   catch(e){return{user:'sposi',pass:'matrimonio2026'};}
 }
 
-// Carica tutti gli invitati da Firestore
+// Carica tutti gli invitati da Supabase
 function loadGFromFirestore(callback) {
-  if (!FB_READY) { callback([]); return; }
-  db.collection('guests').orderBy('createdAt','asc').get()
-    .then(function(snap) {
-      var list = [];
-      snap.forEach(function(doc) { list.push(Object.assign({id: doc.id}, doc.data())); });
-      callback(list);
+  if (!DB_READY) { callback([]); return; }
+  supabase.from('guests').select('*').order('created_at', { ascending: true })
+    .then(function(response) {
+      if (response.error) { showDBError('Errore lettura: '+response.error.message); callback([]); return; }
+      callback(response.data || []);
     })
-    .catch(function(e) { showFbError('Errore lettura: '+e.message); callback([]); });
+    .catch(function(e) { showDBError('Errore lettura: '+e.message); callback([]); });
 }
 
 // Aggiunge un invitato
 function addGuestFS(obj, callback) {
-  if (!FB_READY) { callback && callback(null); return; }
-  obj.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-  db.collection('guests').add(obj)
-    .then(function(ref) { obj.id = ref.id; callback && callback(obj); })
-    .catch(function(e) { showFbError('Errore salvataggio: '+e.message); callback && callback(null); });
+  if (!DB_READY) { callback && callback(null); return; }
+  supabase.from('guests').insert([obj])
+    .then(function(response) {
+      if (response.error) { showDBError('Errore salvataggio: '+response.error.message); callback && callback(null); return; }
+      callback && callback(response.data && response.data[0] ? response.data[0] : obj);
+    })
+    .catch(function(e) { showDBError('Errore salvataggio: '+e.message); callback && callback(null); });
 }
 
 // Aggiorna un invitato
 function updateGuestFS(id, obj, callback) {
-  if (!FB_READY) { callback && callback(); return; }
+  if (!DB_READY) { callback && callback(); return; }
   var data = Object.assign({}, obj);
   delete data.id;
-  db.collection('guests').doc(id).set(data, {merge: true})
-    .then(function() { callback && callback(); })
-    .catch(function(e) { showFbError('Errore aggiornamento: '+e.message); });
+  supabase.from('guests').update(data).eq('id', id)
+    .then(function(response) {
+      if (response.error) { showDBError('Errore aggiornamento: '+response.error.message); }
+      callback && callback();
+    })
+    .catch(function(e) { showDBError('Errore aggiornamento: '+e.message); });
 }
 
 // Elimina un invitato
 function deleteGuestFS(id, callback) {
-  if (!FB_READY) { callback && callback(); return; }
-  db.collection('guests').doc(id).delete()
-    .then(function() { callback && callback(); })
-    .catch(function(e) { showFbError('Errore eliminazione: '+e.message); });
+  if (!DB_READY) { callback && callback(); return; }
+  supabase.from('guests').delete().eq('id', id)
+    .then(function(response) {
+      if (response.error) { showDBError('Errore eliminazione: '+response.error.message); }
+      callback && callback();
+    })
+    .catch(function(e) { showDBError('Errore eliminazione: '+e.message); });
 }
 
 // Elimina tutti
 function deleteAllGuestsFS(callback) {
-  if (!FB_READY) { callback && callback(); return; }
-  var batch = db.batch();
-  db.collection('guests').get().then(function(snap) {
-    snap.forEach(function(doc) { batch.delete(doc.ref); });
-    return batch.commit();
-  }).then(function() { callback && callback(); })
-  .catch(function(e) { showFbError('Errore cancellazione: '+e.message); });
+  if (!DB_READY) { callback && callback(); return; }
+  supabase.from('guests').delete().neq('id', null)
+    .then(function(response) {
+      if (response.error) { showDBError('Errore cancellazione: '+response.error.message); }
+      callback && callback();
+    })
+    .catch(function(e) { showDBError('Errore cancellazione: '+e.message); });
 }
 
 // Import batch da Excel
 function importGuestsFS(list, callback) {
-  if (!FB_READY || !list.length) { callback && callback(0); return; }
-  var col = db.collection('guests');
-  var ts = firebase.firestore.FieldValue.serverTimestamp();
+  if (!DB_READY || !list.length) { callback && callback(0); return; }
   var done = 0, total = list.length;
-  // Firestore batch max 500 ops
   var batches = [];
-  for (var i = 0; i < total; i += 499) {
-    batches.push(list.slice(i, i+499));
+  for (var i = 0; i < total; i += 100) {
+    batches.push(list.slice(i, i+100));
   }
   var batchIdx = 0;
   function nextBatch() {
     if (batchIdx >= batches.length) { callback && callback(done); return; }
-    var b = db.batch();
-    batches[batchIdx].forEach(function(g) {
-      var ref = col.doc();
-      var data = Object.assign({}, g);
-      data.createdAt = ts;
-      delete data.id;
-      b.set(ref, data);
-      done++;
-    });
-    batchIdx++;
-    b.commit().then(nextBatch).catch(function(e){ showFbError('Errore import: '+e.message); callback && callback(done); });
+    var batch = batches[batchIdx];
+    batch.forEach(function(g) { delete g.id; });
+    supabase.from('guests').insert(batch)
+      .then(function(response) {
+        if (response.error) { showDBError('Errore import: '+response.error.message); callback && callback(done); return; }
+        done += batch.length;
+        batchIdx++;
+        nextBatch();
+      })
+      .catch(function(e) { showDBError('Errore import: '+e.message); callback && callback(done); });
   }
   nextBatch();
 }
@@ -681,7 +671,10 @@ function doLogin(){
     document.getElementById('login-screen').classList.remove('open');
     document.getElementById('admin-overlay').style.display='block';
     loadSettingsForm();
-    loadGFromFirestore(function(list){ guests=list; updateStats(); renderGuests(); renderDash(); });
+    initDB();
+    setTimeout(function(){
+      loadGFromFirestore(function(list){ guests=list; updateStats(); renderGuests(); renderDash(); });
+    }, 200);
   }else{
     document.getElementById('login-error').style.display='block';
   }
