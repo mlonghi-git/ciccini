@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Supabase SDK v2 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <style>
 :root {
   --cream:#faf7f2; --warm:#f5ede0; --gold:#c9a96e; --gold-light:#e8d5b0;
@@ -531,10 +531,10 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 var supabase;
 var DB_READY = false;
 
-async function initDB() {
+function initDB() {
   try {
-    const { createClient } = window.supabase;
-    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    if (typeof window.supabase === 'undefined') { showDBError('SDK Supabase non caricato'); return; }
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     DB_READY = true;
     hideDBError();
   } catch(e) { showDBError('Errore Supabase: ' + e.message); }
@@ -544,6 +544,7 @@ function showDBError(msg) {
   if(b){ b.textContent = '⚠ ' + msg; b.style.display = 'block'; }
 }
 function hideDBError() {
+  var b = document.getElementById('fb-banner');
   if(b) b.style.display = 'none';
 }
 
