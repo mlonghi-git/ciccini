@@ -712,15 +712,13 @@ function renderGallerySection() {
   var wrap = document.getElementById('gallery-stage-wrap');
   var strip = document.getElementById('gallery-strip');
   var dots = document.getElementById('gallery-dots');
-  var controls = document.getElementById('gallery-controls');
-  if (!section || !wrap || !strip || !dots || !controls) return;
+  if (!section || !wrap || !strip || !dots) return;
 
   if (!galleryPhotos.length) {
     section.style.display = 'none';
     wrap.innerHTML = '';
     strip.innerHTML = '';
     dots.innerHTML = '';
-    controls.style.display = 'none';
     closeLightbox();
     return;
   }
@@ -728,13 +726,12 @@ function renderGallerySection() {
   section.style.display = 'block';
   var active = getActiveGalleryIndex();
   var activePhoto = galleryPhotos[active];
-  controls.style.display = galleryPhotos.length > 1 ? 'flex' : 'none';
 
   wrap.innerHTML = '<div class="gallery-stage">' + galleryPhotos.map(function (photo, idx) {
     return '<div class="gallery-stage-item' + (idx === active ? ' active' : '') + '">' +
       '<img src="' + photo.src + '" alt="' + safeText(photo.title || ('Foto ' + (idx + 1))) + '">' +
       (idx === active ? '<button class="gallery-stage-hit" type="button" aria-label="Apri foto a schermo intero" onclick="openLightbox(' + idx + ')"></button>' : '') +
-      '<div class="gallery-stage-caption"><strong>' + (photo.title ? safeText(photo.title) : 'Momento speciale') + '</strong><span>' + (photo.caption ? safeText(photo.caption) : 'Un ricordo da condividere con gli invitati.') + '</span></div>' +
+      '<div class="gallery-stage-caption"><strong>' + (photo.title ? safeText(photo.title) : 'Momento speciale') + '</strong>' + (photo.caption ? '<span>' + safeText(photo.caption) + '</span>' : '') + '</div>' +
       '</div>';
   }).join('') + '</div>';
 
@@ -744,7 +741,7 @@ function renderGallerySection() {
       '<div class="gallery-rail-body">' +
       '<div class="gallery-rail-index">0' + (idx + 1) + '</div>' +
       '<div class="gallery-rail-title">' + safeText(photo.title || ('Foto ' + (idx + 1))) + '</div>' +
-      '<div class="gallery-rail-copy">' + safeText(photo.caption || 'Apri la foto per vederla a schermo intero.') + '</div>' +
+        (photo.caption ? '<div class="gallery-rail-copy">' + safeText(photo.caption) + '</div>' : '') +
       '</div></button>';
   }).join('');
 
@@ -803,7 +800,7 @@ function renderLightbox(photo, idx) {
   document.getElementById('lightbox-image').src = photo.src;
   document.getElementById('lightbox-image').alt = photo.title || ('Foto ' + (idx + 1));
   document.getElementById('lightbox-title').textContent = photo.title || ('Foto ' + (idx + 1));
-  document.getElementById('lightbox-caption').textContent = photo.caption || 'Un momento del nostro percorso insieme.';
+  document.getElementById('lightbox-caption').textContent = photo.caption || '';
 }
 
 function openLightbox(idx) {
