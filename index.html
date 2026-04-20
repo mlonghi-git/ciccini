@@ -79,12 +79,6 @@
 <section id="gallery">
   <div class="gallery-wrap">
     <div class="gallery-head">
-      <div>
-        <span class="s-label">I nostri momenti</span>
-        <h2 class="s-title">I ricordi che ci hanno portato fin qui</h2>
-        <div class="gold-line"></div>
-        <p class="s-body">Una selezione pi&ugrave; editoriale di immagini, dettagli e atmosfere che raccontano il nostro percorso e l'energia con cui vogliamo accogliervi.</p>
-      </div>
       <div class="gallery-controls" id="gallery-controls" style="display:none;">
         <button class="gallery-nav" type="button" onclick="moveGallery(-1)">&#8249;</button>
         <button class="gallery-nav" type="button" onclick="moveGallery(1)">&#8250;</button>
@@ -104,33 +98,33 @@
 
 <section id="programma">
   <div class="prog-wrap">
-    <span class="s-label">Il giorno</span>
-    <h2 class="s-title">Programma della giornata</h2>
+    <span class="s-label" id="program-label">Il giorno</span>
+    <h2 class="s-title" id="program-title">Programma della giornata</h2>
     <div class="gold-line"></div>
     <div class="prog-grid">
-      <div class="prog-card"><div class="prog-time">15:00</div><div class="prog-title">Cerimonia civile</div><div class="prog-desc">Palazzo Comunale di Spoleto, Piazza del Mercato. Vi chiediamo di essere presenti 15 minuti prima.</div></div>
-      <div class="prog-card"><div class="prog-time">17:00</div><div class="prog-title">Aperitivo</div><div class="prog-desc">Villa dei Colli &mdash; giardino. Benvenuto con prosecco e finger food tra i colli umbri.</div></div>
-      <div class="prog-card"><div class="prog-time">19:30</div><div class="prog-title">Cena di gala</div><div class="prog-desc">Men&ugrave; a base di specialit&agrave; umbre, vini locali selezionati, brindisi e discorsi degli affetti.</div></div>
-      <div class="prog-card"><div class="prog-time">22:00</div><div class="prog-title">Festa &amp; taglio torta</div><div class="prog-desc">Musica dal vivo, balli e il momento pi&ugrave; dolce della serata. Si va avanti fino all&rsquo;alba!</div></div>
+      <div class="prog-card"><div class="prog-time" id="program-time-1">15:00</div><div class="prog-title" id="program-item-title-1">Cerimonia civile</div><div class="prog-desc" id="program-item-desc-1">Palazzo Comunale di Spoleto, Piazza del Mercato. Vi chiediamo di essere presenti 15 minuti prima.</div></div>
+      <div class="prog-card"><div class="prog-time" id="program-time-2">17:00</div><div class="prog-title" id="program-item-title-2">Aperitivo</div><div class="prog-desc" id="program-item-desc-2">Villa dei Colli &mdash; giardino. Benvenuto con prosecco e finger food tra i colli umbri.</div></div>
+      <div class="prog-card"><div class="prog-time" id="program-time-3">19:30</div><div class="prog-title" id="program-item-title-3">Cena di gala</div><div class="prog-desc" id="program-item-desc-3">Men&ugrave; a base di specialit&agrave; umbre, vini locali selezionati, brindisi e discorsi degli affetti.</div></div>
+      <div class="prog-card"><div class="prog-time" id="program-time-4">22:00</div><div class="prog-title" id="program-item-title-4">Festa &amp; taglio torta</div><div class="prog-desc" id="program-item-desc-4">Musica dal vivo, balli e il momento pi&ugrave; dolce della serata. Si va avanti fino all&rsquo;alba!</div></div>
     </div>
   </div>
 </section>
 
 <section id="rsvp">
   <div class="rsvp-wrap">
-    <span class="s-label">Conferma presenza</span>
-    <h2 class="s-title">Sarai con noi?</h2>
+    <span class="s-label" id="rsvp-label">Conferma presenza</span>
+    <h2 class="s-title" id="rsvp-title">Sarai con noi?</h2>
     <div class="gold-line" style="margin:0 auto 24px;"></div>
-    <p class="s-body" style="margin:0 auto;text-align:center;">
-      Cerca il tuo nome nella lista degli invitati e conferma la tua presenza entro il
-      <strong style="color:var(--gold)">1&deg; Maggio 2026</strong>.
+    <p class="s-body" id="rsvp-intro" style="margin:0 auto;text-align:center;">
+      <span id="rsvp-intro-text">Cerca il tuo nome nella lista degli invitati e conferma la tua presenza entro il</span>
+      <strong style="color:var(--gold)" id="rsvp-deadline">1&deg; Maggio 2026</strong>.
     </p>
     <div class="rsvp-search-wrap" id="rsvp-step1">
       <input class="rsvp-search-inp" type="text" id="rsvp-search" placeholder="Inizia a scrivere il tuo nome o cognome..." autocomplete="off" oninput="rsvpSearch(this.value)" onkeydown="rsvpKeyNav(event)">
       <div class="rsvp-autocomplete" id="rsvp-ac"></div>
       <div class="rsvp-not-found" id="rsvp-not-found">
-        Il tuo nome non &egrave; nella lista degli invitati.<br>
-        <span style="font-size:0.75rem;opacity:0.7">Contatta gli sposi per maggiori informazioni.</span>
+        <span id="rsvp-not-found-main">Il tuo nome non &egrave; nella lista degli invitati.</span><br>
+        <span id="rsvp-not-found-help" style="font-size:0.75rem;opacity:0.7">Contatta gli sposi per maggiori informazioni.</span>
       </div>
     </div>
     <div class="rsvp-card" id="rsvp-card">
@@ -161,20 +155,20 @@
 <section id="location">
   <div class="loc-grid">
     <div>
-      <span class="s-label">Come raggiungerci</span>
-      <h2 class="s-title">Villa dei Colli</h2>
+      <span class="s-label" id="location-label">Come raggiungerci</span>
+      <h2 class="s-title" id="location-title">Villa dei Colli</h2>
       <div class="gold-line"></div>
-      <p class="s-body" style="margin-bottom:36px;">Una villa storica immersa tra gli ulivi e i vigneti umbri, a pochi minuti dal centro di Spoleto. Disponibile navetta dal centro e parcheggio gratuito.</p>
-      <div class="loc-detail"><div class="loc-icon">&#128205;</div><div class="loc-text"><h4>Indirizzo</h4><p>Via dei Colli 14, 06049 Spoleto (PG)</p></div></div>
-      <div class="loc-detail"><div class="loc-icon">&#128663;</div><div class="loc-text"><h4>In auto</h4><p>Uscita A1 Spoleto Nord, seguire indicazioni Villa dei Colli. Parcheggio gratuito.</p></div></div>
-      <div class="loc-detail"><div class="loc-icon">&#128642;</div><div class="loc-text"><h4>In treno</h4><p>Stazione di Spoleto (Trenitalia). Navetta disponibile dalle 14:30.</p></div></div>
-      <div class="loc-detail"><div class="loc-icon">&#127976;</div><div class="loc-text"><h4>Pernottamento</h4><p>Hotel Gattapone &#9733;&#9733;&#9733;&#9733; &mdash; sconto riservato agli invitati (codice: MichelaGuglielmo).</p></div></div>
+      <p class="s-body" id="location-intro" style="margin-bottom:36px;">Una villa storica immersa tra gli ulivi e i vigneti umbri, a pochi minuti dal centro di Spoleto. Disponibile navetta dal centro e parcheggio gratuito.</p>
+      <div class="loc-detail"><div class="loc-icon">&#128205;</div><div class="loc-text"><h4 id="location-item-title-1">Indirizzo</h4><p id="location-item-desc-1">Via dei Colli 14, 06049 Spoleto (PG)</p></div></div>
+      <div class="loc-detail"><div class="loc-icon">&#128663;</div><div class="loc-text"><h4 id="location-item-title-2">In auto</h4><p id="location-item-desc-2">Uscita A1 Spoleto Nord, seguire indicazioni Villa dei Colli. Parcheggio gratuito.</p></div></div>
+      <div class="loc-detail"><div class="loc-icon">&#128642;</div><div class="loc-text"><h4 id="location-item-title-3">In treno</h4><p id="location-item-desc-3">Stazione di Spoleto (Trenitalia). Navetta disponibile dalle 14:30.</p></div></div>
+      <div class="loc-detail"><div class="loc-icon">&#127976;</div><div class="loc-text"><h4 id="location-item-title-4">Pernottamento</h4><p id="location-item-desc-4">Hotel Gattapone &#9733;&#9733;&#9733;&#9733; &mdash; sconto riservato agli invitati (codice: MichelaGuglielmo).</p></div></div>
     </div>
     <div>
       <div class="map-ph">
         <div style="font-size:3rem">&#128506;</div>
-        <span style="color:var(--muted);font-size:0.8rem">Villa dei Colli &mdash; Spoleto</span>
-        <a href="https://maps.google.com/?q=Spoleto+Umbria" target="_blank" style="margin-top:12px;padding:12px 24px;background:var(--gold);color:white;text-decoration:none;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Apri in Maps</a>
+        <span id="location-map-subtitle" style="color:var(--muted);font-size:0.8rem">Villa dei Colli &mdash; Spoleto</span>
+        <a id="location-map-link" href="https://maps.google.com/?q=Spoleto+Umbria" target="_blank" style="margin-top:12px;padding:12px 24px;background:var(--gold);color:white;text-decoration:none;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Apri in Maps</a>
       </div>
     </div>
   </div>
@@ -213,6 +207,7 @@
     <button class="admin-tab" id="tab-guests" onclick="showTab('guests')">Invitati</button>
     <button class="admin-tab" id="tab-import" onclick="showTab('import')">Importa Excel</button>
     <button class="admin-tab" id="tab-photos" onclick="showTab('photos')">Foto</button>
+    <button class="admin-tab" id="tab-contents" onclick="showTab('contents')">Contenuti</button>
     <button class="admin-tab" id="tab-settings" onclick="showTab('settings')">Impostazioni</button>
     <button class="admin-close" onclick="closeAdmin()">&#10005; Chiudi</button>
   </nav>
@@ -237,7 +232,7 @@
         <button class="tbtn btn-gold" onclick="openAddGuest()">+ Aggiungi invitato</button>
       </div>
       <div class="toolbar">
-        <input class="search-inp" type="text" placeholder="Cerca nome, email..." oninput="filterGuests(this.value)">
+        <input class="search-inp" type="text" placeholder="Cerca nome e cognome..." oninput="filterGuests(this.value)">
         <select class="filter-sel" onchange="filterStatus(this.value)">
           <option value="">Tutti gli stati</option>
           <option value="confermato">Confermati</option>
@@ -248,7 +243,7 @@
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>#</th><th>Nome</th><th>Cognome</th><th>Email</th><th>Telefono</th><th>Tavolo</th><th>Dieta</th><th>Stato</th><th>Fonte</th><th>Azioni</th></tr></thead>
+          <thead><tr><th>#</th><th>Nome</th><th>Cognome</th><th>Tipologia</th><th>Telefono</th><th>Tavolo</th><th>Dieta</th><th>Stato</th><th>Fonte</th><th>Azioni</th></tr></thead>
           <tbody id="guests-tbody"></tbody>
         </table>
       </div>
@@ -297,6 +292,156 @@
       </div>
     </div>
 
+    <div class="admin-panel" id="panel-contents">
+      <div class="panel-header">
+        <div class="panel-title">Contenuti del sito</div>
+        <div class="contents-header-actions">
+          <button class="tbtn btn-outline" onclick="restoreDefaultContents()">&#8635; Ripristina default</button>
+          <button class="tbtn btn-gold" onclick="saveContentSettings()">&#10003; Salva tutto</button>
+        </div>
+      </div>
+
+      <div class="contents-sync-bar" id="contents-sync-bar">
+        <span id="contents-sync-msg">&#9679; Contenuti caricati da localStorage</span>
+      </div>
+
+      <div class="contents-subnav">
+        <button class="ctab active" id="ctab-program" onclick="showContentTab('program')">&#128197; Programma</button>
+        <button class="ctab" id="ctab-rsvp" onclick="showContentTab('rsvp')">&#10003; RSVP</button>
+        <button class="ctab" id="ctab-location" onclick="showContentTab('location')">&#128205; Come raggiungerci</button>
+        <button class="ctab" id="ctab-history" onclick="showContentTab('history')">&#128336; Storico</button>
+      </div>
+
+      <div class="cpanel active" id="cpanel-program">
+        <div class="content-section-intro">
+          <p>Modifica i testi del programma della giornata che vengono visualizzati sulla pagina pubblica.</p>
+        </div>
+        <div class="content-section-header">
+          <div class="fg"><label>Etichetta sezione (piccola)</label><input type="text" id="c-program-label" placeholder="Es: Il giorno"></div>
+          <div class="fg"><label>Titolo sezione</label><input type="text" id="c-program-title" placeholder="Es: Programma della giornata"></div>
+        </div>
+        <div class="content-items-grid">
+          <div class="content-item-card">
+            <div class="content-item-number">01</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Orario</label><input type="text" id="c-program-time-1" placeholder="Es: 15:00"></div>
+              <div class="fg"><label>Titolo</label><input type="text" id="c-program-item-title-1"></div>
+              <div class="fg"><label>Descrizione</label><textarea id="c-program-item-desc-1" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">02</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Orario</label><input type="text" id="c-program-time-2" placeholder="Es: 17:00"></div>
+              <div class="fg"><label>Titolo</label><input type="text" id="c-program-item-title-2"></div>
+              <div class="fg"><label>Descrizione</label><textarea id="c-program-item-desc-2" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">03</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Orario</label><input type="text" id="c-program-time-3" placeholder="Es: 19:30"></div>
+              <div class="fg"><label>Titolo</label><input type="text" id="c-program-item-title-3"></div>
+              <div class="fg"><label>Descrizione</label><textarea id="c-program-item-desc-3" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">04</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Orario</label><input type="text" id="c-program-time-4" placeholder="Es: 22:00"></div>
+              <div class="fg"><label>Titolo</label><input type="text" id="c-program-item-title-4"></div>
+              <div class="fg"><label>Descrizione</label><textarea id="c-program-item-desc-4" rows="3"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpanel" id="cpanel-rsvp">
+        <div class="content-section-intro">
+          <p>Modifica i testi della sezione di conferma presenza (RSVP) sul sito pubblico.</p>
+        </div>
+        <div class="content-section-header">
+          <div class="fg"><label>Etichetta sezione (piccola)</label><input type="text" id="c-rsvp-label" placeholder="Es: Conferma presenza"></div>
+          <div class="fg"><label>Titolo sezione</label><input type="text" id="c-rsvp-title" placeholder="Es: Sarai con noi?"></div>
+        </div>
+        <div class="content-single-col">
+          <div class="content-item-card">
+            <div class="content-item-number">&#128222;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Testo di introduzione</label><textarea id="c-rsvp-intro-text" rows="3" placeholder="Cerca il tuo nome nella lista..."></textarea></div>
+              <div class="fg"><label>Data limite in evidenza</label><input type="text" id="c-rsvp-deadline" placeholder="Es: 1° Maggio 2026"></div>
+              <div class="fg"><label>Placeholder campo di ricerca</label><input type="text" id="c-rsvp-search-placeholder"></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">&#10006;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Messaggio &ldquo;invitato non trovato&rdquo;</label><textarea id="c-rsvp-not-found-main" rows="2"></textarea></div>
+              <div class="fg"><label>Testo di supporto sotto il messaggio</label><textarea id="c-rsvp-not-found-help" rows="2"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpanel" id="cpanel-location">
+        <div class="content-section-intro">
+          <p>Modifica i testi della sezione location e le indicazioni per raggiungere la cerimonia.</p>
+        </div>
+        <div class="content-section-header">
+          <div class="fg"><label>Etichetta sezione (piccola)</label><input type="text" id="c-location-label" placeholder="Es: Come raggiungerci"></div>
+          <div class="fg"><label>Titolo sezione</label><input type="text" id="c-location-title" placeholder="Es: Villa dei Colli"></div>
+          <div class="fg" style="grid-column:1/-1"><label>Descrizione introduttiva</label><textarea id="c-location-intro" rows="3"></textarea></div>
+        </div>
+        <div class="content-items-grid">
+          <div class="content-item-card">
+            <div class="content-item-number">&#128205;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Titolo</label><input type="text" id="c-location-item-title-1"></div>
+              <div class="fg"><label>Testo</label><textarea id="c-location-item-desc-1" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">&#128663;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Titolo</label><input type="text" id="c-location-item-title-2"></div>
+              <div class="fg"><label>Testo</label><textarea id="c-location-item-desc-2" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">&#128642;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Titolo</label><input type="text" id="c-location-item-title-3"></div>
+              <div class="fg"><label>Testo</label><textarea id="c-location-item-desc-3" rows="3"></textarea></div>
+            </div>
+          </div>
+          <div class="content-item-card">
+            <div class="content-item-number">&#127976;</div>
+            <div class="content-item-fields">
+              <div class="fg"><label>Titolo</label><input type="text" id="c-location-item-title-4"></div>
+              <div class="fg"><label>Testo</label><textarea id="c-location-item-desc-4" rows="3"></textarea></div>
+            </div>
+          </div>
+        </div>
+        <div class="content-item-card" style="margin-top:24px">
+          <div class="content-item-number">&#128506;</div>
+          <div class="content-item-fields" style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;align-items:end">
+            <div class="fg"><label>Sottotitolo mappa</label><input type="text" id="c-location-map-subtitle"></div>
+            <div class="fg"><label>Testo bottone</label><input type="text" id="c-location-map-label"></div>
+            <div class="fg"><label>URL mappa</label><input type="url" id="c-location-map-url"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpanel" id="cpanel-history">
+        <div class="content-section-intro">
+          <p>Storico delle ultime modifiche salvate ai contenuti del sito.</p>
+        </div>
+        <div id="content-history-list">
+          <div class="history-empty">Nessuna modifica registrata ancora.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="admin-panel" id="panel-settings">
       <div class="panel-header"><div class="panel-title">Impostazioni sito</div></div>
       <div class="settings-grid">
@@ -337,7 +482,13 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
       <div class="fg"><label>Nome *</label><input type="text" id="g-name"></div>
       <div class="fg"><label>Cognome *</label><input type="text" id="g-surname"></div>
-      <div class="fg"><label>Email</label><input type="email" id="g-email"></div>
+      <div class="fg"><label>Tipologia ospite</label>
+        <select id="g-type">
+          <option value="adulto">Adulto</option>
+          <option value="bambino">Bambino</option>
+          <option value="neonato">Neonato</option>
+        </select>
+      </div>
       <div class="fg"><label>Telefono</label><input type="tel" id="g-phone"></div>
       <div class="fg"><label>Tavolo n&deg;</label><input type="text" id="g-table" placeholder="Es: 3"></div>
       <div class="fg"><label>Dieta / Intolleranze</label><input type="text" id="g-diet" placeholder="Vegetariano..."></div>

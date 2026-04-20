@@ -122,6 +122,327 @@ function loadC() {
   }
 }
 
+function defaultContentSettings() {
+  return {
+    programLabel: 'Il giorno',
+    programTitle: 'Programma della giornata',
+    programItems: [
+      { time: '15:00', title: 'Cerimonia civile', desc: 'Palazzo Comunale di Spoleto, Piazza del Mercato. Vi chiediamo di essere presenti 15 minuti prima.' },
+      { time: '17:00', title: 'Aperitivo', desc: 'Villa dei Colli - giardino. Benvenuto con prosecco e finger food tra i colli umbri.' },
+      { time: '19:30', title: 'Cena di gala', desc: 'Menu a base di specialita umbre, vini locali selezionati, brindisi e discorsi degli affetti.' },
+      { time: '22:00', title: 'Festa & taglio torta', desc: 'Musica dal vivo, balli e il momento piu dolce della serata. Si va avanti fino all alba!' }
+    ],
+    rsvpLabel: 'Conferma presenza',
+    rsvpTitle: 'Sarai con noi?',
+    rsvpIntroText: 'Cerca il tuo nome nella lista degli invitati e conferma la tua presenza entro il',
+    rsvpDeadline: '1° Maggio 2026',
+    rsvpSearchPlaceholder: 'Inizia a scrivere il tuo nome o cognome...',
+    rsvpNotFoundMain: 'Il tuo nome non e nella lista degli invitati.',
+    rsvpNotFoundHelp: 'Contatta gli sposi per maggiori informazioni.',
+    locationLabel: 'Come raggiungerci',
+    locationTitle: 'Villa dei Colli',
+    locationIntro: 'Una villa storica immersa tra gli ulivi e i vigneti umbri, a pochi minuti dal centro di Spoleto. Disponibile navetta dal centro e parcheggio gratuito.',
+    locationItems: [
+      { title: 'Indirizzo', desc: 'Via dei Colli 14, 06049 Spoleto (PG)' },
+      { title: 'In auto', desc: 'Uscita A1 Spoleto Nord, seguire indicazioni Villa dei Colli. Parcheggio gratuito.' },
+      { title: 'In treno', desc: 'Stazione di Spoleto (Trenitalia). Navetta disponibile dalle 14:30.' },
+      { title: 'Pernottamento', desc: 'Hotel Gattapone **** - sconto riservato agli invitati (codice: MichelaGuglielmo).' }
+    ],
+    locationMapSubtitle: 'Villa dei Colli - Spoleto',
+    locationMapLabel: 'Apri in Maps',
+    locationMapUrl: 'https://maps.google.com/?q=Spoleto+Umbria'
+  };
+}
+
+function loadContentSettings() {
+  var defaults = defaultContentSettings();
+  try {
+    var raw = JSON.parse(localStorage.getItem('weddingContentSettings')) || {};
+    var merged = Object.assign({}, defaults, raw);
+    merged.programItems = defaults.programItems.map(function (item, idx) {
+      return Object.assign({}, item, raw.programItems && raw.programItems[idx] ? raw.programItems[idx] : {});
+    });
+    merged.locationItems = defaults.locationItems.map(function (item, idx) {
+      return Object.assign({}, item, raw.locationItems && raw.locationItems[idx] ? raw.locationItems[idx] : {});
+    });
+    return merged;
+  } catch (e) {
+    return defaults;
+  }
+}
+
+function saveContentData(data) {
+  localStorage.setItem('weddingContentSettings', JSON.stringify(data));
+}
+
+function setContentSyncBar(state, msg) {
+  var bar = document.getElementById('contents-sync-bar');
+  var txt = document.getElementById('contents-sync-msg');
+  if (!bar || !txt) return;
+  bar.className = 'contents-sync-bar' + (state ? ' ' + state : '');
+  txt.textContent = msg;
+}
+
+function pushContentHistory(data, origin) {
+  var item = {
+    content: data,
+    updated_at: new Date().toISOString(),
+    updated_by: 'admin',
+    origin: origin || 'local'
+  };
+  // save to localStorage history (max 20)
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem('weddingContentHistory')) || []; } catch (e) { hist = []; }
+  hist.unshift(item);
+  if (hist.length > 20) hist.length = 20;
+  localStorage.setItem('weddingContentHistory', JSON.stringify(hist));
+  // push to Supabase if available
+  if (DB_READY && supabase) {
+    supabase.from('content_history').insert([{
+      content: data,
+      updated_at: item.updated_at,
+      updated_by: item.updated_by
+    }]).then(function () {}).catch(function () {});
+  }
+}
+
+function loadContentHistory() {
+  var wrap = document.getElementById('content-history-list');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="history-empty">Caricamento storico...</div>';
+
+  function renderHistory(items, source) {
+    if (!items || !items.length) {
+      wrap.innerHTML = '<div class="history-empty">Nessuna modifica registrata ancora.</div>';
+      return;
+    }
+    wrap.innerHTML = '<div class="history-wrap">' + items.map(function (item) {
+      var d = new Date(item.updated_at || item.created_at || Date.now());
+      var ds = d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
+      var ts = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      var isRemote = item.origin === 'remote' || !item.origin;
+      return '<div class="history-item"><div class="history-dot' + (isRemote ? ' remote' : '') + '"></div><div class="history-item-body"><div class="history-item-date">' + ds + ' alle ' + ts + '</div><div class="history-item-meta">' + (isRemote ? '&#9729; Salvato su Supabase' : '&#128190; Salvato in locale') + (item.updated_by ? ' &bull; ' + item.updated_by : '') + '</div></div></div>';
+    }).join('') + '</div>';
+  }
+
+  if (DB_READY && supabase) {
+    supabase.from('content_history').select('id,updated_at,updated_by').order('updated_at', { ascending: false }).limit(20)
+      .then(function (res) {
+        if (res.error || !res.data || !res.data.length) {
+          var local;
+          try { local = JSON.parse(localStorage.getItem('weddingContentHistory')) || []; } catch (e) { local = []; }
+          renderHistory(local, 'local');
+          return;
+        }
+        renderHistory(res.data.map(function (r) { return { updated_at: r.updated_at, updated_by: r.updated_by, origin: 'remote' }; }), 'remote');
+      })
+      .catch(function () {
+        var local;
+        try { local = JSON.parse(localStorage.getItem('weddingContentHistory')) || []; } catch (e) { local = []; }
+        renderHistory(local, 'local');
+      });
+  } else {
+    var local;
+    try { local = JSON.parse(localStorage.getItem('weddingContentHistory')) || []; } catch (e) { local = []; }
+    renderHistory(local, 'local');
+  }
+}
+
+function setTxt(id, value) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = value || '';
+}
+
+function applyContentSettings() {
+  var c = loadContentSettings();
+  setTxt('program-label', c.programLabel);
+  setTxt('program-title', c.programTitle);
+  c.programItems.forEach(function (item, idx) {
+    var n = idx + 1;
+    setTxt('program-time-' + n, item.time);
+    setTxt('program-item-title-' + n, item.title);
+    setTxt('program-item-desc-' + n, item.desc);
+  });
+
+  setTxt('rsvp-label', c.rsvpLabel);
+  setTxt('rsvp-title', c.rsvpTitle);
+  setTxt('rsvp-intro-text', c.rsvpIntroText);
+  setTxt('rsvp-deadline', c.rsvpDeadline);
+  setTxt('rsvp-not-found-main', c.rsvpNotFoundMain);
+  setTxt('rsvp-not-found-help', c.rsvpNotFoundHelp);
+  var rsvpSearch = document.getElementById('rsvp-search');
+  if (rsvpSearch) rsvpSearch.placeholder = c.rsvpSearchPlaceholder || '';
+
+  setTxt('location-label', c.locationLabel);
+  setTxt('location-title', c.locationTitle);
+  setTxt('location-intro', c.locationIntro);
+  c.locationItems.forEach(function (item, idx) {
+    var n = idx + 1;
+    setTxt('location-item-title-' + n, item.title);
+    setTxt('location-item-desc-' + n, item.desc);
+  });
+  setTxt('location-map-subtitle', c.locationMapSubtitle);
+  var mapLink = document.getElementById('location-map-link');
+  if (mapLink) {
+    mapLink.textContent = c.locationMapLabel || 'Apri in Maps';
+    mapLink.href = c.locationMapUrl || 'https://maps.google.com/?q=Spoleto+Umbria';
+  }
+}
+
+function loadContentForm() {
+  var c = loadContentSettings();
+  document.getElementById('c-program-label').value = c.programLabel || '';
+  document.getElementById('c-program-title').value = c.programTitle || '';
+  c.programItems.forEach(function (item, idx) {
+    var n = idx + 1;
+    document.getElementById('c-program-time-' + n).value = item.time || '';
+    document.getElementById('c-program-item-title-' + n).value = item.title || '';
+    document.getElementById('c-program-item-desc-' + n).value = item.desc || '';
+  });
+
+  document.getElementById('c-rsvp-label').value = c.rsvpLabel || '';
+  document.getElementById('c-rsvp-title').value = c.rsvpTitle || '';
+  document.getElementById('c-rsvp-intro-text').value = c.rsvpIntroText || '';
+  document.getElementById('c-rsvp-deadline').value = c.rsvpDeadline || '';
+  document.getElementById('c-rsvp-search-placeholder').value = c.rsvpSearchPlaceholder || '';
+  document.getElementById('c-rsvp-not-found-main').value = c.rsvpNotFoundMain || '';
+  document.getElementById('c-rsvp-not-found-help').value = c.rsvpNotFoundHelp || '';
+
+  document.getElementById('c-location-label').value = c.locationLabel || '';
+  document.getElementById('c-location-title').value = c.locationTitle || '';
+  document.getElementById('c-location-intro').value = c.locationIntro || '';
+  c.locationItems.forEach(function (item, idx) {
+    var n = idx + 1;
+    document.getElementById('c-location-item-title-' + n).value = item.title || '';
+    document.getElementById('c-location-item-desc-' + n).value = item.desc || '';
+  });
+  document.getElementById('c-location-map-subtitle').value = c.locationMapSubtitle || '';
+  document.getElementById('c-location-map-label').value = c.locationMapLabel || '';
+  document.getElementById('c-location-map-url').value = c.locationMapUrl || '';
+}
+
+function saveContentSettings() {
+  var data = {
+    programLabel: gv('c-program-label'),
+    programTitle: gv('c-program-title'),
+    programItems: [1, 2, 3, 4].map(function (n) {
+      return {
+        time: gv('c-program-time-' + n),
+        title: gv('c-program-item-title-' + n),
+        desc: gv('c-program-item-desc-' + n)
+      };
+    }),
+    rsvpLabel: gv('c-rsvp-label'),
+    rsvpTitle: gv('c-rsvp-title'),
+    rsvpIntroText: gv('c-rsvp-intro-text'),
+    rsvpDeadline: gv('c-rsvp-deadline'),
+    rsvpSearchPlaceholder: gv('c-rsvp-search-placeholder'),
+    rsvpNotFoundMain: gv('c-rsvp-not-found-main'),
+    rsvpNotFoundHelp: gv('c-rsvp-not-found-help'),
+    locationLabel: gv('c-location-label'),
+    locationTitle: gv('c-location-title'),
+    locationIntro: gv('c-location-intro'),
+    locationItems: [1, 2, 3, 4].map(function (n) {
+      return {
+        title: gv('c-location-item-title-' + n),
+        desc: gv('c-location-item-desc-' + n)
+      };
+    }),
+    locationMapSubtitle: gv('c-location-map-subtitle'),
+    locationMapLabel: gv('c-location-map-label'),
+    locationMapUrl: gv('c-location-map-url')
+  };
+
+  // Persist locally always
+  saveContentData(data);
+  applyContentSettings();
+  pushContentHistory(data, 'local');
+  setContentSyncBar('saving', '&#9650; Salvataggio in corso...');
+
+  // Persist to Supabase if available
+  if (DB_READY && supabase) {
+    var row = { id: 'main', content: data, updated_at: new Date().toISOString(), updated_by: 'admin' };
+    supabase.from('site_content').upsert([row])
+      .then(function (res) {
+        if (res.error) {
+          setContentSyncBar('error', '&#9651; Supabase non raggiungibile &mdash; contenuto salvato localmente');
+        } else {
+          setContentSyncBar('synced', '&#10003; Salvato su Supabase &bull; ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+          // update history origin to remote
+          pushContentHistory(data, 'remote');
+        }
+      })
+      .catch(function () {
+        setContentSyncBar('error', '&#9651; Supabase non raggiungibile &mdash; contenuto salvato localmente');
+      });
+  } else {
+    setContentSyncBar('', '&#9679; Salvato localmente (Supabase non connesso)');
+  }
+  toast('Contenuti aggiornati ✓');
+}
+
+function loadContentFromSupabase(callback) {
+  if (!DB_READY || !supabase) { callback(null); return; }
+  supabase.from('site_content').select('content,updated_at,updated_by').eq('id', 'main').limit(1)
+    .then(function (res) {
+      if (res.error || !res.data || !res.data.length) { callback(null); return; }
+      var row = res.data[0];
+      if (!row.content || !Object.keys(row.content).length) { callback(null); return; }
+      callback(row.content, row.updated_at, row.updated_by);
+    })
+    .catch(function () { callback(null); });
+}
+
+function initContentSettings() {
+  loadContentFromSupabase(function (remoteData, updatedAt, updatedBy) {
+    if (remoteData) {
+      // merge remote over defaults and save locally
+      var defaults = defaultContentSettings();
+      var merged = Object.assign({}, defaults, remoteData);
+      merged.programItems = defaults.programItems.map(function (item, idx) {
+        return Object.assign({}, item, remoteData.programItems && remoteData.programItems[idx] ? remoteData.programItems[idx] : {});
+      });
+      merged.locationItems = defaults.locationItems.map(function (item, idx) {
+        return Object.assign({}, item, remoteData.locationItems && remoteData.locationItems[idx] ? remoteData.locationItems[idx] : {});
+      });
+      saveContentData(merged);
+      var ts = updatedAt ? new Date(updatedAt).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+      setContentSyncBar('synced', '&#10003; Contenuti caricati da Supabase' + (ts ? ' &bull; ' + ts : '') + (updatedBy ? ' da ' + updatedBy : ''));
+    } else {
+      setContentSyncBar('', '&#9679; Contenuti caricati da localStorage');
+    }
+    applyContentSettings();
+  });
+}
+
+function restoreDefaultContents() {
+  if (!confirm('Ripristinare tutti i contenuti ai valori originali? Le modifiche attuali andranno perse.')) return;
+  var data = defaultContentSettings();
+  saveContentData(data);
+  applyContentSettings();
+  loadContentForm();
+  pushContentHistory(data, 'local');
+  setContentSyncBar('', '&#9679; Contenuti ripristinati ai valori di default');
+  // sync to Supabase if available
+  if (DB_READY && supabase) {
+    supabase.from('site_content').upsert([{ id: 'main', content: data, updated_at: new Date().toISOString(), updated_by: 'admin' }])
+      .then(function (res) {
+        if (!res.error) setContentSyncBar('synced', '&#10003; Default ripristinati e sincronizzati su Supabase');
+      }).catch(function () {});
+  }
+  toast('Contenuti ripristinati ai default ✓');
+}
+
+function showContentTab(name) {
+  ['program', 'rsvp', 'location', 'history'].forEach(function (t) {
+    var tab = document.getElementById('ctab-' + t);
+    var panel = document.getElementById('cpanel-' + t);
+    if (tab) tab.classList.toggle('active', t === name);
+    if (panel) panel.classList.toggle('active', t === name);
+  });
+  if (name === 'history') loadContentHistory();
+}
+
 function loadGallery() {
   try {
     return JSON.parse(localStorage.getItem('weddingGallery')) || [];
@@ -599,6 +920,7 @@ function doLogin() {
     document.getElementById('login-screen').classList.remove('open');
     document.getElementById('admin-overlay').style.display = 'block';
     loadSettingsForm();
+    loadContentForm();
     initDB();
     setTimeout(function () {
       loadGFromFirestore(function (list) {
@@ -618,7 +940,7 @@ function closeAdmin() {
 }
 
 function showTab(name) {
-  ['dashboard', 'guests', 'import', 'photos', 'settings'].forEach(function (tabName) {
+  ['dashboard', 'guests', 'import', 'photos', 'contents', 'settings'].forEach(function (tabName) {
     document.getElementById('panel-' + tabName).classList.remove('active');
     document.getElementById('tab-' + tabName).classList.remove('active');
   });
@@ -632,6 +954,7 @@ function showTab(name) {
   }
   if (name === 'dashboard') renderDash();
   if (name === 'photos') renderPhotoAdmin();
+  if (name === 'contents') { loadContentForm(); setContentSyncBar('', '&#9679; Contenuti caricati da localStorage'); }
 }
 
 function updateStats() {
@@ -657,7 +980,7 @@ function renderDash() {
     }
     el.innerHTML = recent.map(function (g) {
       var badgeClass = g.status === 'confermato' ? 'bc' : g.status === 'declinato' ? 'bd' : 'bp';
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0f3460"><span>' + g.name + ' ' + g.surname + '<span style="color:#8892a4;font-size:0.75rem;margin-left:8px">' + (g.email || '') + '</span></span><span class="badge ' + badgeClass + '">' + g.status + '</span></div>';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0f3460"><span>' + g.name + ' ' + g.surname + '</span><span class="badge ' + badgeClass + '">' + g.status + '</span></div>';
     }).join('');
   });
 }
@@ -665,7 +988,7 @@ function renderDash() {
 function getFiltered() {
   return guests.filter(function (g) {
     var q = srch.toLowerCase();
-    var ms = !q || (g.name + ' ' + g.surname + ' ' + (g.email || '')).toLowerCase().indexOf(q) > -1;
+    var ms = !q || (g.name + ' ' + g.surname).toLowerCase().indexOf(q) > -1;
     var mst = !stFilter || g.status === stFilter;
     return ms && mst;
   });
@@ -681,6 +1004,20 @@ function filterStatus(v) {
   stFilter = v;
   curPage = 1;
   renderGuests();
+}
+
+function normalizeGuestType(v) {
+  var raw = (v || '').toString().trim().toLowerCase();
+  if (!raw) return 'adulto';
+  if (['adulto', 'adulta', 'adulti', 'adulte'].indexOf(raw) > -1) return 'adulto';
+  if (['bambino', 'bambina', 'bambini', 'bambine', 'bimbo', 'bimba'].indexOf(raw) > -1) return 'bambino';
+  if (['neonato', 'neonata', 'neonati', 'neonate', 'infante'].indexOf(raw) > -1) return 'neonato';
+  return 'adulto';
+}
+
+function guestTypeLabel(v) {
+  var t = normalizeGuestType(v);
+  return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
 function bc(s) {
@@ -699,7 +1036,7 @@ function renderGuests() {
     tb.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#8892a4;padding:40px">Nessun invitato trovato</td></tr>';
   } else {
     tb.innerHTML = page.map(function (g, i) {
-      return '<tr><td style="color:#8892a4">' + (start + i + 1) + '</td><td>' + g.name + '</td><td>' + g.surname + '</td><td style="color:#8892a4">' + (g.email || '&mdash;') + '</td><td style="color:#8892a4">' + (g.phone || '&mdash;') + '</td><td style="color:#8892a4">' + (g.table || '&mdash;') + '</td><td style="color:#8892a4;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (g.diet || '&mdash;') + '</td><td><span class="badge ' + bc(g.status) + '">' + g.status + '</span></td><td><span class="badge ' + (g.source === 'rsvp' ? 'br' : 'bp') + '">' + (g.source || 'manuale') + '</span></td><td><div class="tbl-actions"><button class="tbl-btn" onclick="editGuest(\'' + g.id + '\')">✎</button><button class="tbl-btn del" onclick="deleteGuest(\'' + g.id + '\')">✕</button></div></td></tr>';
+      return '<tr><td style="color:#8892a4">' + (start + i + 1) + '</td><td>' + g.name + '</td><td>' + g.surname + '</td><td><span class="badge bp">' + guestTypeLabel(g.guest_type) + '</span></td><td style="color:#8892a4">' + (g.phone || '&mdash;') + '</td><td style="color:#8892a4">' + (g.table || '&mdash;') + '</td><td style="color:#8892a4;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (g.diet || '&mdash;') + '</td><td><span class="badge ' + bc(g.status) + '">' + g.status + '</span></td><td><span class="badge ' + (g.source === 'rsvp' ? 'br' : 'bp') + '">' + (g.source || 'manuale') + '</span></td><td><div class="tbl-actions"><button class="tbl-btn" onclick="editGuest(\'' + g.id + '\')">✎</button><button class="tbl-btn del" onclick="deleteGuest(\'' + g.id + '\')">✕</button></div></td></tr>';
     }).join('');
   }
   renderPag(pages, total);
@@ -733,21 +1070,23 @@ function goPage(p) {
 
 function openAddGuest() {
   document.getElementById('modal-title').textContent = 'Aggiungi invitato';
-  ['g-id', 'g-name', 'g-surname', 'g-email', 'g-phone', 'g-table', 'g-diet', 'g-notes'].forEach(function (id) {
+  ['g-id', 'g-name', 'g-surname', 'g-phone', 'g-table', 'g-diet', 'g-notes', 'g-type'].forEach(function (id) {
     document.getElementById(id).value = '';
   });
   document.getElementById('g-status').value = 'in attesa';
+  document.getElementById('g-type').value = 'adulto';
   document.getElementById('guest-modal').classList.add('open');
 }
 
 function editGuest(id) {
-  var g = guests.find(function (item) { return item.id === id; });
+  var sid = String(id);
+  var g = guests.find(function (item) { return String(item.id) === sid; });
   if (!g) return;
   document.getElementById('modal-title').textContent = 'Modifica invitato';
   document.getElementById('g-id').value = g.id;
   document.getElementById('g-name').value = g.name || '';
   document.getElementById('g-surname').value = g.surname || '';
-  document.getElementById('g-email').value = g.email || '';
+  document.getElementById('g-type').value = normalizeGuestType(g.guest_type);
   document.getElementById('g-phone').value = g.phone || '';
   document.getElementById('g-table').value = g.table || '';
   document.getElementById('g-diet').value = g.diet || '';
@@ -767,7 +1106,7 @@ function saveGuest() {
   var obj = {
     name: name,
     surname: surname,
-    email: gv('g-email'),
+    guest_type: normalizeGuestType(document.getElementById('g-type').value),
     phone: gv('g-phone'),
     table: gv('g-table'),
     diet: gv('g-diet'),
@@ -993,7 +1332,7 @@ function loadExcel(file) {
 var FIELDS = [
   { k: 'name', l: 'Nome' },
   { k: 'surname', l: 'Cognome' },
-  { k: 'email', l: 'Email' },
+  { k: 'guest_type', l: 'Tipologia' },
   { k: 'phone', l: 'Telefono' },
   { k: 'table', l: 'Tavolo' },
   { k: 'diet', l: 'Dieta/Intolleranze' },
@@ -1035,6 +1374,7 @@ function confirmImport() {
       else guest[f.k] = '';
     });
     if (!guest.name && !guest.surname) return;
+    guest.guest_type = normalizeGuestType(guest.guest_type);
     if (!guest.status) guest.status = 'in attesa';
     toImport.push(guest);
   });
@@ -1067,9 +1407,9 @@ function exportExcel() {
       toast('Nessun invitato da esportare');
       return;
     }
-    var rows = [['ID', 'Nome', 'Cognome', 'Email', 'Telefono', 'Tavolo', 'Dieta', 'Stato', 'Fonte', 'Note']];
+    var rows = [['ID', 'Nome', 'Cognome', 'Tipologia', 'Telefono', 'Tavolo', 'Dieta', 'Stato', 'Fonte', 'Note']];
     list.forEach(function (g) {
-      rows.push([g.id, g.name, g.surname, g.email, g.phone, g.table, g.diet, g.status, g.source, g.notes]);
+      rows.push([g.id, g.name, g.surname, guestTypeLabel(g.guest_type), g.phone, g.table, g.diet, g.status, g.source, g.notes]);
     });
     var ws = XLSX.utils.aoa_to_sheet(rows);
     var wb = XLSX.utils.book_new();
@@ -1144,6 +1484,7 @@ function clearAll() {
   document.getElementById('hero-place').textContent = s.location;
   document.getElementById('nav-brand').textContent = s.bride + ' & ' + s.groom;
   document.getElementById('footer-names').textContent = s.bride + ' & ' + s.groom;
+  initContentSettings();
   applyGallery();
   setPhotoStatus('pronto. Carica un file o usa un URL pubblico.');
 })();
