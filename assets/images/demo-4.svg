@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Brindisi serale</title>
+  <desc id="desc">Scene festive con bicchieri e bagliori dorati.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#5d4338"/>
+      <stop offset="100%" stop-color="#241814"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#glow)"/>
+  <g fill="#d7a85b" opacity="0.28">
+    <circle cx="180" cy="180" r="10"/><circle cx="290" cy="120" r="6"/><circle cx="360" cy="238" r="8"/>
+    <circle cx="1380" cy="190" r="10"/><circle cx="1288" cy="146" r="8"/><circle cx="1188" cy="242" r="6"/>
+    <circle cx="802" cy="118" r="9"/><circle cx="724" cy="188" r="7"/><circle cx="900" cy="220" r="8"/>
+  </g>
+  <path d="M0 860C202 810 406 806 628 848C862 892 1100 898 1330 842C1438 816 1528 802 1600 806V1100H0Z" fill="#1a120f"/>
+  <g transform="translate(490 286)">
+    <path d="M170 0C160 100 124 182 74 264C58 292 74 324 112 336L122 338V454" fill="none" stroke="#f2e7d5" stroke-width="14" stroke-linecap="round"/>
+    <path d="M166 0C174 98 212 182 260 264C276 292 260 324 222 336L212 338V454" fill="none" stroke="#f2e7d5" stroke-width="14" stroke-linecap="round"/>
+    <path d="M120 338H214" stroke="#f2e7d5" stroke-width="12" stroke-linecap="round"/>
+    <path d="M112 338C126 358 206 358 222 338" fill="#dcb976" opacity="0.8"/>
+    <path d="M130 318C142 260 158 206 166 146C176 208 194 262 206 318" fill="#d8a85c" opacity="0.62"/>
+  </g>
+  <g transform="translate(790 240)">
+    <path d="M92 56C112 148 170 244 258 354L176 410C128 334 90 270 68 210C54 172 44 120 48 56Z" fill="#f6ecde"/>
+    <path d="M92 56C112 148 170 244 258 354L176 410C128 334 90 270 68 210C54 172 44 120 48 56Z" fill="none" stroke="#f6ecde" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M82 94C102 162 146 236 216 328L170 362C126 296 96 242 76 194C66 170 58 136 58 94Z" fill="#dcb976" opacity="0.72"/>
+    <path d="M176 410L242 516" stroke="#f6ecde" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <g fill="#ffe39a">
+    <circle cx="720" cy="236" r="6"/><circle cx="760" cy="186" r="5"/><circle cx="820" cy="160" r="7"/>
+    <circle cx="894" cy="184" r="6"/><circle cx="944" cy="228" r="5"/><circle cx="986" cy="170" r="6"/>
+  </g>
+</svg>

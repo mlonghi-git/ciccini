@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Passeggiata al tramonto</title>
+  <desc id="desc">Illustrazione romantica con colline, sole e due figure.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8dcc1"/>
+      <stop offset="55%" stop-color="#eab38d"/>
+      <stop offset="100%" stop-color="#c97b63"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6d8b74"/>
+      <stop offset="100%" stop-color="#3f5b48"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#sky)"/>
+  <circle cx="1220" cy="240" r="120" fill="#fff1d6" opacity="0.85"/>
+  <path d="M0 730C190 650 380 670 540 760C710 855 900 885 1070 790C1230 700 1390 660 1600 720V1100H0Z" fill="#89a286"/>
+  <path d="M0 820C180 770 360 790 560 870C770 955 1010 965 1180 900C1330 842 1465 812 1600 850V1100H0Z" fill="url(#hill)"/>
+  <path d="M450 420C535 365 640 350 728 378C808 404 855 463 904 506C949 545 1018 559 1092 542" fill="none" stroke="#f7ead9" stroke-width="18" stroke-linecap="round" opacity="0.6"/>
+  <g transform="translate(760 690)">
+    <ellipse cx="0" cy="160" rx="120" ry="30" fill="#294032" opacity="0.2"/>
+    <path d="M-60 0C-50 90 -58 152 -84 214" stroke="#223428" stroke-width="18" stroke-linecap="round"/>
+    <path d="M30 10C42 90 38 152 56 214" stroke="#223428" stroke-width="18" stroke-linecap="round"/>
+    <path d="M-105 32C-58 -16 4 -18 44 26" fill="none" stroke="#223428" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="-58" cy="-36" r="34" fill="#f6d8c4"/>
+    <circle cx="34" cy="-22" r="36" fill="#efd0bb"/>
+    <path d="M-88 -48C-82 -82 -42 -94 -18 -68C-26 -38 -54 -20 -88 -48Z" fill="#6f4538"/>
+    <path d="M12 -40C22 -78 68 -84 88 -52C78 -24 42 -10 12 -40Z" fill="#52352f"/>
+  </g>
+</svg>

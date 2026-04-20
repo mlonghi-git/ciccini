@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Cena tra luci sospese</title>
+  <desc id="desc">Tavolo elegante in giardino con fili di luci calde.</desc>
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#24314c"/>
+      <stop offset="100%" stop-color="#0f1628"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#314f42"/>
+      <stop offset="100%" stop-color="#1a2e25"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#night)"/>
+  <rect y="820" width="1600" height="280" fill="url(#grass)"/>
+  <g fill="none" stroke="#dcb976" stroke-width="6" opacity="0.8">
+    <path d="M0 190C250 270 460 270 760 180C1020 102 1310 94 1600 210"/>
+    <path d="M0 320C320 390 560 390 840 305C1080 232 1315 228 1600 330"/>
+  </g>
+  <g fill="#ffe7a8">
+    <circle cx="120" cy="214" r="12"/><circle cx="300" cy="258" r="10"/><circle cx="485" cy="243" r="12"/>
+    <circle cx="658" cy="198" r="11"/><circle cx="836" cy="172" r="12"/><circle cx="1020" cy="150" r="11"/>
+    <circle cx="1212" cy="150" r="12"/><circle cx="1388" cy="168" r="11"/><circle cx="1520" cy="196" r="12"/>
+    <circle cx="112" cy="333" r="11"/><circle cx="294" cy="362" r="12"/><circle cx="488" cy="362" r="10"/>
+    <circle cx="674" cy="324" r="11"/><circle cx="852" cy="297" r="12"/><circle cx="1042" cy="277" r="11"/>
+    <circle cx="1238" cy="281" r="12"/><circle cx="1422" cy="308" r="10"/>
+  </g>
+  <g>
+    <ellipse cx="810" cy="845" rx="330" ry="64" fill="#e8d8bd"/>
+    <rect x="610" y="714" width="400" height="110" rx="18" fill="#f3eadf"/>
+    <rect x="680" y="644" width="260" height="76" rx="14" fill="#fcf7f0"/>
+    <g fill="#d2a95e">
+      <rect x="724" y="632" width="12" height="86" rx="6"/>
+      <rect x="862" y="632" width="12" height="86" rx="6"/>
+    </g>
+    <g fill="#f8f1e2">
+      <circle cx="736" cy="710" r="26"/><circle cx="808" cy="706" r="26"/><circle cx="880" cy="710" r="26"/>
+    </g>
+  </g>
+  <g opacity="0.75">
+    <path d="M320 800C356 748 414 748 452 800" fill="none" stroke="#efd7bd" stroke-width="10"/>
+    <path d="M1140 800C1178 748 1232 748 1274 800" fill="none" stroke="#efd7bd" stroke-width="10"/>
+  </g>
+</svg>
