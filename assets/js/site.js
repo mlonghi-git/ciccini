@@ -35,6 +35,10 @@ var rsvpAllGuests = [];
 var rsvpSelected = null;
 var rsvpChoice = null;
 var acHighlight = -1;
+var contentSyncMeta = {
+  state: '',
+  message: '● Contenuti caricati da localStorage'
+};
 
 function getSupabaseFactory() {
   if (window.supabase && typeof window.supabase.createClient === 'function') return window.supabase;
@@ -183,7 +187,16 @@ function setContentSyncBar(state, msg) {
   txt.textContent = msg;
 }
 
-function pushContentHistory(data, origin) {
+function updateContentSyncUI(state, msg) {
+  contentSyncMeta = { state: state || '', message: msg || '● Contenuti caricati da localStorage' };
+  setContentSyncBar(contentSyncMeta.state, contentSyncMeta.message);
+}
+
+function refreshContentSyncUI() {
+  setContentSyncBar(contentSyncMeta.state, contentSyncMeta.message);
+}
+
+function pushContentHistory(data, origin, persistRemote) {
   var item = {
     content: data,
     updated_at: new Date().toISOString(),
@@ -196,14 +209,18 @@ function pushContentHistory(data, origin) {
   hist.unshift(item);
   if (hist.length > 20) hist.length = 20;
   localStorage.setItem('weddingContentHistory', JSON.stringify(hist));
-  // push to Supabase if available
-  if (DB_READY && supabase) {
+  if (persistRemote && DB_READY && supabase) {
     supabase.from('content_history').insert([{
       content: data,
       updated_at: item.updated_at,
       updated_by: item.updated_by
     }]).then(function () {}).catch(function () {});
   }
+}
+
+function refreshContentHistoryIfOpen() {
+  var panel = document.getElementById('cpanel-history');
+  if (panel && panel.classList.contains('active')) loadContentHistory();
 }
 
 function loadContentHistory() {
@@ -356,8 +373,7 @@ function saveContentSettings() {
   // Persist locally always
   saveContentData(data);
   applyContentSettings();
-  pushContentHistory(data, 'local');
-  setContentSyncBar('saving', '&#9650; Salvataggio in corso...');
+  updateContentSyncUI('saving', '▲ Salvataggio in corso...');
 
   // Persist to Supabase if available
   if (DB_READY && supabase) {
@@ -365,18 +381,24 @@ function saveContentSettings() {
     supabase.from('site_content').upsert([row])
       .then(function (res) {
         if (res.error) {
-          setContentSyncBar('error', '&#9651; Supabase non raggiungibile &mdash; contenuto salvato localmente');
+          pushContentHistory(data, 'local', false);
+          updateContentSyncUI('error', '△ Supabase non raggiungibile - contenuto salvato localmente');
+          refreshContentHistoryIfOpen();
         } else {
-          setContentSyncBar('synced', '&#10003; Salvato su Supabase &bull; ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
-          // update history origin to remote
-          pushContentHistory(data, 'remote');
+          pushContentHistory(data, 'remote', true);
+          updateContentSyncUI('synced', '✓ Salvato su Supabase • ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+          refreshContentHistoryIfOpen();
         }
       })
       .catch(function () {
-        setContentSyncBar('error', '&#9651; Supabase non raggiungibile &mdash; contenuto salvato localmente');
+        pushContentHistory(data, 'local', false);
+        updateContentSyncUI('error', '△ Supabase non raggiungibile - contenuto salvato localmente');
+        refreshContentHistoryIfOpen();
       });
   } else {
-    setContentSyncBar('', '&#9679; Salvato localmente (Supabase non connesso)');
+    pushContentHistory(data, 'local', false);
+    updateContentSyncUI('', '● Salvato localmente (Supabase non connesso)');
+    refreshContentHistoryIfOpen();
   }
   toast('Contenuti aggiornati ✓');
 }
@@ -407,9 +429,9 @@ function initContentSettings() {
       });
       saveContentData(merged);
       var ts = updatedAt ? new Date(updatedAt).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-      setContentSyncBar('synced', '&#10003; Contenuti caricati da Supabase' + (ts ? ' &bull; ' + ts : '') + (updatedBy ? ' da ' + updatedBy : ''));
+      updateContentSyncUI('synced', '✓ Contenuti caricati da Supabase' + (ts ? ' • ' + ts : '') + (updatedBy ? ' da ' + updatedBy : ''));
     } else {
-      setContentSyncBar('', '&#9679; Contenuti caricati da localStorage');
+      updateContentSyncUI('', '● Contenuti caricati da localStorage');
     }
     applyContentSettings();
   });
@@ -421,14 +443,24 @@ function restoreDefaultContents() {
   saveContentData(data);
   applyContentSettings();
   loadContentForm();
-  pushContentHistory(data, 'local');
-  setContentSyncBar('', '&#9679; Contenuti ripristinati ai valori di default');
+  updateContentSyncUI('saving', '▲ Ripristino contenuti di default...');
   // sync to Supabase if available
   if (DB_READY && supabase) {
     supabase.from('site_content').upsert([{ id: 'main', content: data, updated_at: new Date().toISOString(), updated_by: 'admin' }])
       .then(function (res) {
-        if (!res.error) setContentSyncBar('synced', '&#10003; Default ripristinati e sincronizzati su Supabase');
+        if (!res.error) {
+          pushContentHistory(data, 'remote', true);
+          updateContentSyncUI('synced', '✓ Default ripristinati e sincronizzati su Supabase');
+        } else {
+          pushContentHistory(data, 'local', false);
+          updateContentSyncUI('error', '△ Default ripristinati localmente, sync Supabase fallita');
+        }
+        refreshContentHistoryIfOpen();
       }).catch(function () {});
+  } else {
+    pushContentHistory(data, 'local', false);
+    updateContentSyncUI('', '● Contenuti ripristinati ai valori di default');
+    refreshContentHistoryIfOpen();
   }
   toast('Contenuti ripristinati ai default ✓');
 }
@@ -532,19 +564,23 @@ function addGuestFS(obj, callback) {
 
 function updateGuestFS(id, obj, callback) {
   if (!DB_READY) {
-    if (callback) callback();
+    if (callback) callback(false);
     return;
   }
   var data = Object.assign({}, obj);
   delete data.id;
   supabase.from('guests').update(data).eq('id', id)
     .then(function (response) {
-      if (response.error) showDBError('Errore aggiornamento: ' + response.error.message);
-      if (callback) callback();
+      if (response.error) {
+        showDBError('Errore aggiornamento: ' + response.error.message);
+        if (callback) callback(false, response.error);
+        return;
+      }
+      if (callback) callback(true, response.data);
     })
     .catch(function (e) {
       showDBError('Errore aggiornamento: ' + e.message);
-      if (callback) callback();
+      if (callback) callback(false, e);
     });
 }
 
@@ -966,7 +1002,10 @@ function showTab(name) {
   }
   if (name === 'dashboard') renderDash();
   if (name === 'photos') renderPhotoAdmin();
-  if (name === 'contents') { loadContentForm(); setContentSyncBar('', '&#9679; Contenuti caricati da localStorage'); }
+  if (name === 'contents') {
+    loadContentForm();
+    refreshContentSyncUI();
+  }
 }
 
 function updateStats() {
@@ -1128,7 +1167,11 @@ function saveGuest() {
   if (existingId) {
     var orig = guests.find(function (x) { return x.id === existingId; });
     if (orig) obj.source = orig.source;
-    updateGuestFS(existingId, obj, function () {
+    updateGuestFS(existingId, obj, function (ok) {
+      if (!ok) {
+        toast('Errore nell\'aggiornamento');
+        return;
+      }
       closeModal();
       loadGFromFirestore(function (list) {
         guests = list;
@@ -1263,7 +1306,13 @@ function submitRSVP() {
   var btn = document.getElementById('rsvp-submit-btn');
   btn.disabled = true;
   btn.textContent = 'Salvataggio...';
-  updateGuestFS(rsvpSelected.id, { status: rsvpChoice, diet: diet, source: 'rsvp', rsvpDate: new Date().toISOString() }, function () {
+  updateGuestFS(rsvpSelected.id, { status: rsvpChoice, diet: diet, source: 'rsvp', rsvp_date: new Date().toISOString() }, function (ok) {
+    if (!ok) {
+      btn.disabled = false;
+      btn.textContent = 'Conferma risposta';
+      toast('Errore nel salvataggio RSVP');
+      return;
+    }
     document.getElementById('rsvp-step1').style.display = 'none';
     document.getElementById('rsvp-card').style.display = 'none';
     document.getElementById('rsvp-success-name').textContent = rsvpSelected.name;
