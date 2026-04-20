@@ -5,7 +5,7 @@ var SUPABASE_CDN = [
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
   'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
 ];
-var STORAGE_BUCKET_CANDIDATES = ['gallery', 'photos', 'images', 'public'];
+var STORAGE_BUCKET_CANDIDATES = ['gallery'];
 var DEFAULT_GALLERY = [
   { id: 'demo-1', title: 'Passeggiata al tramonto', caption: 'Un’immagine hero perfetta per dare subito calore alla pagina.', src: 'assets/images/demo-1.svg', origin: 'demo' },
   { id: 'demo-2', title: 'Cena tra luci sospese', caption: 'Una scena serale che racconta l’atmosfera del ricevimento.', src: 'assets/images/demo-2.svg', origin: 'demo' },
@@ -481,6 +481,15 @@ function setPhotoStatus(msg) {
   if (el) el.textContent = 'Storage: ' + msg;
 }
 
+function formatStorageError(error, bucket) {
+  if (!error) return 'upload non riuscito';
+  var parts = [];
+  if (bucket) parts.push('bucket "' + bucket + '"');
+  if (error.message) parts.push(error.message);
+  if (error.statusCode) parts.push('status ' + error.statusCode);
+  return parts.join(' - ') || 'upload non riuscito';
+}
+
 function loadGFromFirestore(callback) {
   if (!DB_READY) {
     callback([]);
@@ -822,15 +831,16 @@ function handlePhotoFile(file) {
 
 function uploadPhotoToStorage(uploadInfo, callback) {
   if (!DB_READY || !supabase || !uploadInfo || !uploadInfo.blob) {
-    callback(null);
+    callback(null, null, 'Supabase non inizializzato');
     return;
   }
   var buckets = getBucketCandidates();
   var idx = 0;
+  var lastError = '';
 
   function tryBucket() {
     if (idx >= buckets.length) {
-      callback(null);
+      callback(null, null, lastError || 'bucket non configurato');
       return;
     }
     var bucket = buckets[idx++];
@@ -840,14 +850,16 @@ function uploadPhotoToStorage(uploadInfo, callback) {
     supabase.storage.from(bucket).upload(path, uploadInfo.blob, { contentType: 'image/jpeg', upsert: false })
       .then(function (response) {
         if (response.error) {
+          lastError = formatStorageError(response.error, bucket);
           tryBucket();
           return;
         }
         var publicData = supabase.storage.from(bucket).getPublicUrl(path);
         localStorage.setItem('weddingPhotoBucket', bucket);
-        callback(publicData && publicData.data ? publicData.data.publicUrl : null, bucket);
+        callback(publicData && publicData.data ? publicData.data.publicUrl : null, bucket, '');
       })
-      .catch(function () {
+      .catch(function (error) {
+        lastError = formatStorageError(error, bucket);
         tryBucket();
       });
   }
@@ -882,7 +894,7 @@ function addPhotoFromAdmin() {
 
   if (btn) btn.disabled = true;
   setPhotoStatus('upload verso Supabase Storage in corso...');
-  uploadPhotoToStorage(pendingPhotoUpload, function (publicUrl, bucket) {
+  uploadPhotoToStorage(pendingPhotoUpload, function (publicUrl, bucket, errorMsg) {
     if (btn) btn.disabled = false;
     if (publicUrl) {
       persist(publicUrl, 'storage');
@@ -890,7 +902,7 @@ function addPhotoFromAdmin() {
       return;
     }
     persist(pendingPhotoData, 'local');
-    setPhotoStatus('bucket non trovato o upload non riuscito: uso copia locale come fallback.');
+    setPhotoStatus((errorMsg || 'bucket non trovato o upload non riuscito') + '. Uso copia locale come fallback.');
   });
 }
 

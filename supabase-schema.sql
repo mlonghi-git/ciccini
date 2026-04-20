@@ -53,7 +53,26 @@ CREATE TABLE IF NOT EXISTS content_history (
 );
 
 -- ------------------------------------------------------------
--- 4. Row Level Security
+-- 4. Storage bucket galleria
+--    Necessario per upload immagini dal backoffice
+-- ------------------------------------------------------------
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'gallery',
+  'gallery',
+  true,
+  10485760,
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+ON CONFLICT (id) DO UPDATE
+SET
+  public = EXCLUDED.public,
+  file_size_limit = EXCLUDED.file_size_limit,
+  allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+-- ------------------------------------------------------------
+-- 5. Row Level Security
 --    Abilita RLS e crea policy permissive (chiave anon del progetto)
 --    Per produzione: restringi a ruoli specifici o usa la service_role
 -- ------------------------------------------------------------
@@ -80,7 +99,27 @@ CREATE POLICY "allow_insert_content_history" ON content_history
   FOR INSERT WITH CHECK (true);
 
 -- ------------------------------------------------------------
--- 5. Indici utili
+-- 6. Policy storage.objects per bucket gallery
+-- ------------------------------------------------------------
+
+DROP POLICY IF EXISTS "gallery_public_read" ON storage.objects;
+CREATE POLICY "gallery_public_read" ON storage.objects
+  FOR SELECT USING (bucket_id = 'gallery');
+
+DROP POLICY IF EXISTS "gallery_public_insert" ON storage.objects;
+CREATE POLICY "gallery_public_insert" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'gallery');
+
+DROP POLICY IF EXISTS "gallery_public_update" ON storage.objects;
+CREATE POLICY "gallery_public_update" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'gallery') WITH CHECK (bucket_id = 'gallery');
+
+DROP POLICY IF EXISTS "gallery_public_delete" ON storage.objects;
+CREATE POLICY "gallery_public_delete" ON storage.objects
+  FOR DELETE USING (bucket_id = 'gallery');
+
+-- ------------------------------------------------------------
+-- 7. Indici utili
 -- ------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_guests_status   ON guests (status);
 CREATE INDEX IF NOT EXISTS idx_guests_source   ON guests (source);
